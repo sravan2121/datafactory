@@ -1,0 +1,17 @@
+{
+	"name": "ds_sftp_binary_dev",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linked_sftp_dev",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

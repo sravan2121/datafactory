@@ -1,0 +1,19 @@
+{
+	"name": "dl_Json_bronze",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLake_csv",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

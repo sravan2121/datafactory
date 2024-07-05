@@ -1,0 +1,20 @@
+{
+	"name": "linked_sftp_dev",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "eu-central-1.sftpcloud.io",
+			"port": 22,
+			"skipHostKeyValidation": true,
+			"authenticationType": "Basic",
+			"userName": "a9eb5d35fe96443c8ba85e9d36cc6223",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEVCMjRGNTRBLThDN0YtNDQwMy05NkFDLUQ4Mzc2MjJBMjMwNF9jMDlkYmJlOC1hY2M1LTQzZjktOTA2OS03NWNhYTVmZDBkYjYiDQp9"
+		},
+		"connectVia": {
+			"referenceName": "integrationRuntime1",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

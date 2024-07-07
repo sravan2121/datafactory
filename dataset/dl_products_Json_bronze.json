@@ -1,0 +1,32 @@
+{
+	"name": "dl_products_Json_bronze",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_bronze_csv_dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products.json",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"PRODUCT_ID": {
+					"type": "string"
+				},
+				"PRODUCT_NAME": {
+					"type": "string"
+				},
+				"UNIT_PRICE": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

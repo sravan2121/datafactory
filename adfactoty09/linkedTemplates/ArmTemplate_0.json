@@ -518,19 +518,13 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"STORE_ID": {
+						"PRODUCT_ID": {
 							"type": "string"
 						},
-						"STORE_NAME": {
+						"PRODUCT_NAME": {
 							"type": "string"
 						},
-						"WEB_ADDRESS": {
-							"type": "string"
-						},
-						"LATITUDE": {
-							"type": "string"
-						},
-						"LONGITUDE": {
+						"UNIT_PRICE": {
 							"type": "string"
 						}
 					}

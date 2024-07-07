@@ -1,0 +1,159 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfactoty09"
+		},
+		"AzureBlobStorage2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
+		},
+		"AzureDataLake_csv_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLake_csv'"
+		},
+		"BL_CSV_DEV_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BL_CSV_DEV'"
+		},
+		"datalake_bronze_csv_dynamic_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'datalake_bronze_csv_dynamic'"
+		},
+		"linked_sftp_dev_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'linked_sftp_dev'"
+		},
+		"AzureDataLake_csv_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlazuredatabricksdev01.dfs.core.windows.net/"
+		},
+		"datalake_bronze_csv_dynamic_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlazuredatabricksdev01.dfs.core.windows.net/"
+		},
+		"linked_sftp_dev_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "eu-central-1.sftpcloud.io"
+		},
+		"linked_sftp_dev_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "a9eb5d35fe96443c8ba85e9d36cc6223"
+		},
+		"AzureDataLakeStorage942_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/6e61c688-bf7a-4071-9186-02e3b1d11159/resourceGroups/rgdev01/providers/Microsoft.Storage/storageAccounts/dlazuredatabricksdev01"
+		},
+		"AzureDataLakeStorage942_properties_groupId": {
+			"type": "string",
+			"defaultValue": "dfs"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adfactoty09_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage2_connectionString": {
+						"value": "[parameters('AzureBlobStorage2_connectionString')]"
+					},
+					"AzureDataLake_csv_accountKey": {
+						"value": "[parameters('AzureDataLake_csv_accountKey')]"
+					},
+					"BL_CSV_DEV_connectionString": {
+						"value": "[parameters('BL_CSV_DEV_connectionString')]"
+					},
+					"datalake_bronze_csv_dynamic_accountKey": {
+						"value": "[parameters('datalake_bronze_csv_dynamic_accountKey')]"
+					},
+					"linked_sftp_dev_password": {
+						"value": "[parameters('linked_sftp_dev_password')]"
+					},
+					"AzureDataLake_csv_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLake_csv_properties_typeProperties_url')]"
+					},
+					"datalake_bronze_csv_dynamic_properties_typeProperties_url": {
+						"value": "[parameters('datalake_bronze_csv_dynamic_properties_typeProperties_url')]"
+					},
+					"linked_sftp_dev_properties_typeProperties_host": {
+						"value": "[parameters('linked_sftp_dev_properties_typeProperties_host')]"
+					},
+					"linked_sftp_dev_properties_typeProperties_userName": {
+						"value": "[parameters('linked_sftp_dev_properties_typeProperties_userName')]"
+					},
+					"AzureDataLakeStorage942_properties_privateLinkResourceId": {
+						"value": "[parameters('AzureDataLakeStorage942_properties_privateLinkResourceId')]"
+					},
+					"AzureDataLakeStorage942_properties_groupId": {
+						"value": "[parameters('AzureDataLakeStorage942_properties_groupId')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adfactoty09_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adfactoty09_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "adfactoty09_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adfactoty09_ArmTemplate_1')]"
+			]
+		}
+	]
+}

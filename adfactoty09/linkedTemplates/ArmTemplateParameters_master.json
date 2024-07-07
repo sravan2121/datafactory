@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfactoty09"
+		},
+		"AzureBlobStorage2_connectionString": {
+			"value": ""
+		},
+		"AzureDataLake_csv_accountKey": {
+			"value": ""
+		},
+		"BL_CSV_DEV_connectionString": {
+			"value": ""
+		},
+		"datalake_bronze_csv_dynamic_accountKey": {
+			"value": ""
+		},
+		"linked_sftp_dev_password": {
+			"value": ""
+		},
+		"AzureDataLake_csv_properties_typeProperties_url": {
+			"value": "https://dlazuredatabricksdev01.dfs.core.windows.net/"
+		},
+		"datalake_bronze_csv_dynamic_properties_typeProperties_url": {
+			"value": "https://dlazuredatabricksdev01.dfs.core.windows.net/"
+		},
+		"linked_sftp_dev_properties_typeProperties_host": {
+			"value": "eu-central-1.sftpcloud.io"
+		},
+		"linked_sftp_dev_properties_typeProperties_userName": {
+			"value": "a9eb5d35fe96443c8ba85e9d36cc6223"
+		},
+		"AzureDataLakeStorage942_properties_privateLinkResourceId": {
+			"value": "/subscriptions/6e61c688-bf7a-4071-9186-02e3b1d11159/resourceGroups/rgdev01/providers/Microsoft.Storage/storageAccounts/dlazuredatabricksdev01"
+		},
+		"AzureDataLakeStorage942_properties_groupId": {
+			"value": "dfs"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

@@ -10,20 +10,26 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "customers.json",
+				"fileName": "products.json",
 				"fileSystem": "bronze"
 			}
 		},
 		"schema": {
 			"type": "object",
 			"properties": {
-				"CUSTOMER_ID": {
+				"STORE_ID": {
 					"type": "string"
 				},
-				"FULL_NAME": {
+				"STORE_NAME": {
 					"type": "string"
 				},
-				"EMAIL_ADDRESS": {
+				"WEB_ADDRESS": {
+					"type": "string"
+				},
+				"LATITUDE": {
+					"type": "string"
+				},
+				"LONGITUDE": {
 					"type": "string"
 				}
 			}

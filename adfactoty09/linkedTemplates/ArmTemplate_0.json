@@ -476,6 +476,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dl_Parquet_stores_json_silver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/datalake_bronze_csv_dynamic')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dl_binary_bronze')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -511,20 +535,26 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "products.json",
+						"fileName": "stores.json",
 						"fileSystem": "bronze"
 					}
 				},
 				"schema": {
 					"type": "object",
 					"properties": {
-						"PRODUCT_ID": {
+						"STORE_ID": {
 							"type": "string"
 						},
-						"PRODUCT_NAME": {
+						"STORE_NAME": {
 							"type": "string"
 						},
-						"UNIT_PRICE": {
+						"WEB_ADDRESS": {
+							"type": "string"
+						},
+						"LATITUDE": {
+							"type": "string"
+						},
+						"LONGITUDE": {
 							"type": "string"
 						}
 					}
@@ -549,30 +579,6 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": "orderid_parquet",
-						"fileSystem": "silver"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/datalake_bronze_csv_dynamic')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dl_products_json_Parquet_silver')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "datalake_bronze_csv_dynamic",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
 						"fileSystem": "silver"
 					},
 					"compressionCodec": "snappy"

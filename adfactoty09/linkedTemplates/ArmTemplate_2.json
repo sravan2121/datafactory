@@ -13,6 +13,89 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_json')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dl_bronze_dataflow_Json",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dl_Parquet_stores_json_silver",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          STORE_ID as string,",
+						"          STORE_NAME as string,",
+						"          WEB_ADDRESS as string,",
+						"          LATITUDE as string,",
+						"          LONGITUDE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> source1",
+						"source1 cast(output(",
+						"          STORE_ID as integer,",
+						"          STORE_NAME as string,",
+						"          WEB_ADDRESS as string,",
+						"          LATITUDE as float,",
+						"          LONGITUDE as float",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 derive(ingestedby = 'sravan',",
+						"          ingesteddate = currentDate(),",
+						"          ingestedtime = currentTimestamp()) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          store_id = STORE_ID,",
+						"          web_address = WEB_ADDRESS,",
+						"          latitude = LATITUDE,",
+						"          longitude = LONGITUDE,",
+						"          ingestedby,",
+						"          ingesteddate,",
+						"          ingestedtime",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/get meta data')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1241,7 +1324,9 @@
 				"annotations": [],
 				"lastPublishTime": "2024-07-05T05:29:37Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_json')]"
+			]
 		}
 	]
 }

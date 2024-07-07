@@ -13,6 +13,28 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dl_products_json_Parquet_silver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_Binary_dev')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -831,82 +853,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_silver_Parquet_orderitems')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow_json')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "dl_bronze_dataflow_Json",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "dl_products_json_Parquet_silver",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "cast1"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          PRODUCT_ID as string,",
-						"          PRODUCT_NAME as string,",
-						"          UNIT_PRICE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'documentPerLine') ~> source1",
-						"source1 cast(output(",
-						"          PRODUCT_ID as string",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"cast1 derive(ingestedby = 'sravan',",
-						"          ingesteddate = currentDate(),",
-						"          ingestedtime = currentTimestamp()) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          product_id = PRODUCT_ID,",
-						"          Product_name = PRODUCT_NAME,",
-						"          unit_price = UNIT_PRICE,",
-						"          ingestedby,",
-						"          ingesteddate,",
-						"          ingestedtime",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }

@@ -13,6 +13,64 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dl_products_Json_bronze')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "products.json",
+						"fileSystem": "bronze"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"PRODUCT_ID": {
+							"type": "string"
+						},
+						"PRODUCT_NAME": {
+							"type": "string"
+						},
+						"UNIT_PRICE": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dl_products_Parquet_silver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "productsjson",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dl_products_json_Parquet_silver')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -692,166 +750,6 @@
 				"[concat(variables('factoryId'), '/datasets/ds_csv_input_tezt')]",
 				"[concat(variables('factoryId'), '/datasets/ds_landing_test')]",
 				"[concat(variables('factoryId'), '/datasets/ds_archive_test')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow parquet')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "dl_Parquet_bronze",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "dl_orderid_Parquet_silver",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "cast1"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          ORDER_ID as string,",
-						"          ORDER_DATETIME as string,",
-						"          CUSTOMER_ID as string,",
-						"          ORDER_STATUS as string,",
-						"          STORE_ID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet') ~> source1",
-						"source1 cast(output(",
-						"          ORDER_ID as integer,",
-						"          ORDER_DATETIME as timestamp,",
-						"          CUSTOMER_ID as integer,",
-						"          ORDER_STATUS as string,",
-						"          STORE_ID as integer",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"cast1 derive(ingestedby = 'sravan',",
-						"          ingested_date = currentDate(),",
-						"          ingested_time = currentTimestamp()) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          ORDER_ID,",
-						"          ORDER_DATETIME,",
-						"          CUSTOMER_ID,",
-						"          ORDER_STATUS,",
-						"          STORE_ID",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow_bronze to silver')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Ds_bronze_csv_dynamic",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_silver_Parquet_orderitems",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "cast1"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          CUSTOMER_ID as string,",
-						"          FULL_NAME as string,",
-						"          EMAIL_ADDRESS as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 cast(output(",
-						"          CUSTOMER_ID as integer '000',",
-						"          FULL_NAME as string,",
-						"          EMAIL_ADDRESS as string",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"cast1 derive(ingested_by = 'sravan',",
-						"          ingested_date = currentDate(),",
-						"          ingested_time = currentTimestamp()) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          customer_id = CUSTOMER_ID,",
-						"          full_name = FULL_NAME,",
-						"          email_address = EMAIL_ADDRESS,",
-						"          ingested_by,",
-						"          ingested_date,",
-						"          ingested_time",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_silver_Parquet_orderitems')]"
 			]
 		}
 	]

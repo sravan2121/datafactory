@@ -1,0 +1,19 @@
+{
+	"name": "dl_Parquet_stores_json_silver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_bronze_csv_dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

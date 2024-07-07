@@ -961,7 +961,7 @@
 														}
 													},
 													{
-														"name": "Data flow4",
+														"name": "Data flow_products",
 														"type": "ExecuteDataFlow",
 														"dependsOn": [
 															{

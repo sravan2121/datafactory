@@ -486,12 +486,12 @@
 												"userProperties": [],
 												"typeProperties": {
 													"dataflow": {
-														"referenceName": "dataflow_json",
+														"referenceName": "customers_json",
 														"type": "DataFlowReference"
 													},
-													"integrationRuntime": {
-														"referenceName": "integrationRuntime1",
-														"type": "IntegrationRuntimeReference"
+													"compute": {
+														"coreCount": 8,
+														"computeType": "General"
 													},
 													"traceLevel": "Fine"
 												}
@@ -678,7 +678,7 @@
 												}
 											},
 											{
-												"name": "Data flow3",
+												"name": "Data flow_orderid",
 												"type": "ExecuteDataFlow",
 												"dependsOn": [
 													{

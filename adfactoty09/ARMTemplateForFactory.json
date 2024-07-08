@@ -1843,6 +1843,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"folderPath": "stores_json",
 						"fileSystem": "silver"
 					},
 					"compressionCodec": "snappy"
@@ -2040,7 +2041,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "productsjson",
+						"folderPath": "products_json",
 						"fileSystem": "silver"
 					},
 					"compressionCodec": "snappy"

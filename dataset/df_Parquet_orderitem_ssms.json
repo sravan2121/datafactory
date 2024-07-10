@@ -1,0 +1,45 @@
+{
+	"name": "df_Parquet_orderitem_ssms",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_bronze_csv_dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "orderitemstxt",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "customer_id",
+				"type": "INT32"
+			},
+			{
+				"name": "full_name",
+				"type": "UTF8"
+			},
+			{
+				"name": "email_address",
+				"type": "UTF8"
+			},
+			{
+				"name": "ingested_by",
+				"type": "UTF8"
+			},
+			{
+				"name": "ingested_date",
+				"type": "DATE"
+			},
+			{
+				"name": "ingested_time",
+				"type": "INT96"
+			}
+		]
+	}
+}

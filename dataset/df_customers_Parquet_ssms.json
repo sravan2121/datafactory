@@ -1,0 +1,45 @@
+{
+	"name": "df_customers_Parquet_ssms",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_bronze_csv_dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "customers_json",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "CUSTOMER_ID",
+				"type": "INT32"
+			},
+			{
+				"name": "FULL_NAME",
+				"type": "UTF8"
+			},
+			{
+				"name": "EMAIL_ADDRESS",
+				"type": "UTF8"
+			},
+			{
+				"name": "INGESTED_BY",
+				"type": "UTF8"
+			},
+			{
+				"name": "INGESTED_DATE",
+				"type": "DATE"
+			},
+			{
+				"name": "INGESTED_TIME",
+				"type": "INT96"
+			}
+		]
+	}
+}

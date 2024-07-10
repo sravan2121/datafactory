@@ -1,0 +1,49 @@
+{
+	"name": "df_stores_Parquet_ssms",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_bronze_csv_dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "stores_json",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "STORE_ID",
+				"type": "INT32"
+			},
+			{
+				"name": "STORE_NAME",
+				"type": "UTF8"
+			},
+			{
+				"name": "WEB_ADDRESS",
+				"type": "UTF8"
+			},
+			{
+				"name": "LATITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "LONGITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "INGESTED_BY",
+				"type": "UTF8"
+			},
+			{
+				"name": "INGESTED_DATE",
+				"type": "DATE"
+			}
+		]
+	}
+}

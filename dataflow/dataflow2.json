@@ -1,0 +1,230 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "df_orderitems_Parquet_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "orderitems"
+				},
+				{
+					"dataset": {
+						"referenceName": "df_products_Parquet_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "products"
+				},
+				{
+					"dataset": {
+						"referenceName": "df_orders_Parquet_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "orders"
+				},
+				{
+					"dataset": {
+						"referenceName": "df_stores_Parquet_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "stores"
+				},
+				{
+					"dataset": {
+						"referenceName": "df_customers_Parquet_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "customers"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "leftouterjoint"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "select4"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ORDER_ID as integer,",
+				"          LINE_ITEM_ID as integer,",
+				"          PRODUCT_ID as integer,",
+				"          UNIT_PRICE as integer,",
+				"          QUANTITY as integer,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> orderitems",
+				"source(output(",
+				"          PRODUCT_ID as integer,",
+				"          PRODUCT_NAME as string,",
+				"          UNIT_PRICE as integer,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> products",
+				"source(output(",
+				"          ORDER_ID as integer,",
+				"          CUSTOMER_ID as integer,",
+				"          STORE_ID as integer,",
+				"          ORDER_STATUS as string,",
+				"          ORDER_DATETIME as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> orders",
+				"source(output(",
+				"          STORE_ID as integer,",
+				"          STORE_NAME as string,",
+				"          WEB_ADDRESS as string,",
+				"          LATITUDE as float,",
+				"          LONGITUDE as float,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> stores",
+				"source(output(",
+				"          CUSTOMER_ID as integer,",
+				"          FULL_NAME as string,",
+				"          EMAIL_ADDRESS as string,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> customers",
+				"orderitems, products join(orderitems@PRODUCT_ID == products@PRODUCT_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftouterjoint",
+				"leftouterjoint select(mapColumn(",
+				"          ORDER_ID,",
+				"          LINE_ITEM_ID,",
+				"          PRODUCT_ID = orderitems@PRODUCT_ID,",
+				"          UNIT_PRICE = orderitems@UNIT_PRICE,",
+				"          QUANTITY,",
+				"          PRODUCT_NAME,",
+				"          INGESTED_BY = orderitems@INGESTED_BY,",
+				"          INGESTED_DATE = orderitems@INGESTED_DATE,",
+				"          INGESTED_TIME = orderitems@INGESTED_TIME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, orders join(select1@ORDER_ID == orders@ORDER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          ORDER_ID = select1@ORDER_ID,",
+				"          LINE_ITEM_ID,",
+				"          PRODUCT_ID,",
+				"          UNIT_PRICE,",
+				"          QUANTITY,",
+				"          PRODUCT_NAME,",
+				"          CUSTOMER_ID,",
+				"          STORE_ID,",
+				"          ORDER_STATUS,",
+				"          ORDER_DATETIME,",
+				"          INGESTED_BY,",
+				"          INGESTED_DATE,",
+				"          INGESTED_TIME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2, stores join(select2@STORE_ID == stores@STORE_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 select(mapColumn(",
+				"          ORDER_ID,",
+				"          LINE_ITEM_ID,",
+				"          PRODUCT_ID,",
+				"          CUSTOMER_ID,",
+				"          STORE_ID = select2@STORE_ID,",
+				"          STORE_NAME,",
+				"          PRODUCT_NAME,",
+				"          UNIT_PRICE,",
+				"          QUANTITY,",
+				"          WEB_ADDRESS,",
+				"          LONGITUDE,",
+				"          LATITUDE,",
+				"          ORDER_STATUS,",
+				"          ORDER_DATETIME,",
+				"          INGESTED_BY = select2@INGESTED_BY,",
+				"          INGESTED_DATE = select2@INGESTED_DATE,",
+				"          INGESTED_TIME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3, customers join(select3@CUSTOMER_ID == customers@CUSTOMER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3 select(mapColumn(",
+				"          ORDER_ID,",
+				"          LINE_ITEM_ID,",
+				"          PRODUCT_ID,",
+				"          UNIT_PRICE,",
+				"          QUANTITY,",
+				"          PRODUCT_NAME,",
+				"          ORDER_DATETIME,",
+				"          CUSTOMER_ID = select3@CUSTOMER_ID,",
+				"          ORDER_STATUS,",
+				"          STORE_ID,",
+				"          STORE_NAME,",
+				"          WEB_ADDRESS,",
+				"          LATITUDE,",
+				"          LONGITUDE,",
+				"          FULL_NAME,",
+				"          EMAIL_ADDRESS,",
+				"          INGESTED_BY = select3@INGESTED_BY,",
+				"          INGESTED_DATE = select3@INGESTED_DATE,",
+				"          INGESTED_TIME = select3@INGESTED_TIME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4"
+			]
+		}
+	}
+}

@@ -1,0 +1,107 @@
+{
+	"name": "flowlet21",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select4"
+				},
+				{
+					"name": "orderitems"
+				},
+				{
+					"name": "products"
+				},
+				{
+					"name": "orders"
+				},
+				{
+					"name": "stores"
+				},
+				{
+					"name": "customers"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          ORDER_ID as integer,",
+				"          LINE_ITEM_ID as integer,",
+				"          PRODUCT_ID as integer,",
+				"          UNIT_PRICE as integer,",
+				"          QUANTITY as integer,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     order: 0,",
+				"     allowSchemaDrift: true) ~> orderitems",
+				"input(output(",
+				"          PRODUCT_ID as integer,",
+				"          PRODUCT_NAME as string,",
+				"          UNIT_PRICE as integer,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     order: 1,",
+				"     allowSchemaDrift: true) ~> products",
+				"input(output(",
+				"          ORDER_ID as integer,",
+				"          CUSTOMER_ID as integer,",
+				"          STORE_ID as integer,",
+				"          ORDER_STATUS as string,",
+				"          ORDER_DATETIME as timestamp",
+				"     ),",
+				"     order: 2,",
+				"     allowSchemaDrift: true) ~> orders",
+				"input(output(",
+				"          STORE_ID as integer,",
+				"          STORE_NAME as string,",
+				"          WEB_ADDRESS as string,",
+				"          LATITUDE as float,",
+				"          LONGITUDE as float,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date",
+				"     ),",
+				"     order: 3,",
+				"     allowSchemaDrift: true) ~> stores",
+				"input(output(",
+				"          CUSTOMER_ID as integer,",
+				"          FULL_NAME as string,",
+				"          EMAIL_ADDRESS as string,",
+				"          INGESTED_BY as string,",
+				"          INGESTED_DATE as date,",
+				"          INGESTED_TIME as timestamp",
+				"     ),",
+				"     order: 4,",
+				"     allowSchemaDrift: true) ~> customers",
+				"orderitems select(mapColumn(",
+				"          ORDER_ID,",
+				"          LINE_ITEM_ID,",
+				"          PRODUCT_ID,",
+				"          UNIT_PRICE,",
+				"          QUANTITY,",
+				"          PRODUCT_NAME,",
+				"          ORDER_DATETIME,",
+				"          CUSTOMER_ID = select3@CUSTOMER_ID,",
+				"          ORDER_STATUS,",
+				"          STORE_ID,",
+				"          STORE_NAME,",
+				"          WEB_ADDRESS,",
+				"          LATITUDE,",
+				"          LONGITUDE,",
+				"          FULL_NAME,",
+				"          EMAIL_ADDRESS,",
+				"          INGESTED_BY = select3@INGESTED_BY,",
+				"          INGESTED_DATE = select3@INGESTED_DATE,",
+				"          INGESTED_TIME = select3@INGESTED_TIME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4"
+			]
+		}
+	}
+}

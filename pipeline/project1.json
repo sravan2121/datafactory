@@ -1,5 +1,5 @@
 {
-	"name": "pipeline2",
+	"name": "project1",
 	"properties": {
 		"activities": [
 			{
@@ -517,7 +517,7 @@
 												}
 											},
 											{
-												"name": "Data flow2",
+												"name": "Dataflow_customers",
 												"type": "ExecuteDataFlow",
 												"dependsOn": [
 													{
@@ -548,7 +548,7 @@
 												}
 											},
 											{
-												"name": "Data flow_products",
+												"name": "Dataflow_products",
 												"type": "ExecuteDataFlow",
 												"dependsOn": [
 													{
@@ -579,7 +579,7 @@
 												}
 											},
 											{
-												"name": "Data flow_stores",
+												"name": "Dataflow_stores",
 												"type": "ExecuteDataFlow",
 												"dependsOn": [
 													{

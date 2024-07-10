@@ -300,7 +300,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"name": "[concat(parameters('factoryName'), '/project1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -833,7 +833,7 @@
 														}
 													},
 													{
-														"name": "Data flow2",
+														"name": "Dataflow_customers",
 														"type": "ExecuteDataFlow",
 														"dependsOn": [
 															{
@@ -870,7 +870,7 @@
 														}
 													},
 													{
-														"name": "Data flow_products",
+														"name": "Dataflow_products",
 														"type": "ExecuteDataFlow",
 														"dependsOn": [
 															{
@@ -907,7 +907,7 @@
 														}
 													},
 													{
-														"name": "Data flow_stores",
+														"name": "Dataflow_stores",
 														"type": "ExecuteDataFlow",
 														"dependsOn": [
 															{
@@ -1265,15 +1265,23 @@
 				},
 				"schema": [
 					{
-						"name": "CUSTOMER_ID",
+						"name": "ORDER_ID",
 						"type": "String"
 					},
 					{
-						"name": "FULL_NAME",
+						"name": "LINE_ITEM_ID",
 						"type": "String"
 					},
 					{
-						"name": "EMAIL_ADDRESS",
+						"name": "PRODUCT_ID",
+						"type": "String"
+					},
+					{
+						"name": "UNIT_PRICE",
+						"type": "String"
+					},
+					{
+						"name": "QUANTITY",
 						"type": "String"
 					}
 				]
@@ -1316,6 +1324,106 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_Parquet_orderitems_ssms')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "orderitemstxt",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "customer_id",
+						"type": "INT32"
+					},
+					{
+						"name": "full_name",
+						"type": "UTF8"
+					},
+					{
+						"name": "email_address",
+						"type": "UTF8"
+					},
+					{
+						"name": "ingested_by",
+						"type": "UTF8"
+					},
+					{
+						"name": "ingested_date",
+						"type": "DATE"
+					},
+					{
+						"name": "ingested_time",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/datalake_bronze_csv_dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_products_Parquet_silver_ssms')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_bronze_csv_dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "products_json",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "PRODUCT_ID",
+						"type": "INT32"
+					},
+					{
+						"name": "PRODUCT_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "UNIT_PRICE",
+						"type": "INT32"
+					},
+					{
+						"name": "ingestedby",
+						"type": "UTF8"
+					},
+					{
+						"name": "ingesteddate",
+						"type": "DATE"
+					},
+					{
+						"name": "ingestedtime",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/datalake_bronze_csv_dynamic')]"
 			]
 		},
 		{
@@ -2406,9 +2514,9 @@
 						"          CUSTOMER_ID,",
 						"          FULL_NAME,",
 						"          EMAIL_ADDRESS,",
-						"          ingestedby,",
-						"          ingesteddate,",
-						"          ingestedtime",
+						"          INGESTED_BY = ingestedby,",
+						"          INGESTED_DATE = ingesteddate,",
+						"          INGESTED_TIME = ingestedtime",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -2496,10 +2604,10 @@
 						"          ingested_time = currentTimestamp()) ~> derivedColumn1",
 						"derivedColumn1 select(mapColumn(",
 						"          ORDER_ID,",
-						"          ORDER_DATETIME,",
 						"          CUSTOMER_ID,",
+						"          STORE_ID,",
 						"          ORDER_STATUS,",
-						"          STORE_ID",
+						"          ORDER_DATETIME",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -2578,9 +2686,9 @@
 						"          PRODUCT_ID,",
 						"          PRODUCT_NAME,",
 						"          UNIT_PRICE,",
-						"          ingestedby,",
-						"          ingesteddate,",
-						"          ingestedtime",
+						"          INGESTED_BY = ingestedby,",
+						"          INGESTED_DATE = ingesteddate,",
+						"          INGESTED_TIME = ingestedtime",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -2638,29 +2746,35 @@
 					],
 					"scriptLines": [
 						"source(output(",
-						"          CUSTOMER_ID as string,",
-						"          FULL_NAME as string,",
-						"          EMAIL_ADDRESS as string",
+						"          ORDER_ID as string,",
+						"          LINE_ITEM_ID as string,",
+						"          PRODUCT_ID as string,",
+						"          UNIT_PRICE as string,",
+						"          QUANTITY as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> source1",
 						"source1 cast(output(",
-						"          CUSTOMER_ID as integer '000',",
-						"          FULL_NAME as string,",
-						"          EMAIL_ADDRESS as string",
+						"          ORDER_ID as integer,",
+						"          LINE_ITEM_ID as integer,",
+						"          PRODUCT_ID as integer,",
+						"          UNIT_PRICE as integer,",
+						"          QUANTITY as integer",
 						"     ),",
 						"     errors: true) ~> cast1",
 						"cast1 derive(ingested_by = 'sravan',",
 						"          ingested_date = currentDate(),",
 						"          ingested_time = currentTimestamp()) ~> derivedColumn1",
 						"derivedColumn1 select(mapColumn(",
-						"          customer_id = CUSTOMER_ID,",
-						"          full_name = FULL_NAME,",
-						"          email_address = EMAIL_ADDRESS,",
-						"          ingested_by,",
-						"          ingested_date,",
-						"          ingested_time",
+						"          ORDER_ID,",
+						"          LINE_ITEM_ID,",
+						"          PRODUCT_ID,",
+						"          UNIT_PRICE,",
+						"          QUANTITY,",
+						"          INGESTED_BY = ingested_by,",
+						"          INGESTED_DATE = ingested_date,",
+						"          INGESTED_TIME = ingested_time",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -2740,13 +2854,14 @@
 						"          ingesteddate = currentDate(),",
 						"          ingestedtime = currentTimestamp()) ~> derivedColumn1",
 						"derivedColumn1 select(mapColumn(",
-						"          store_id = STORE_ID,",
-						"          web_address = WEB_ADDRESS,",
-						"          latitude = LATITUDE,",
-						"          longitude = LONGITUDE,",
-						"          ingestedby,",
-						"          ingesteddate,",
-						"          ingestedtime",
+						"          STORE_ID,",
+						"          STORE_NAME,",
+						"          WEB_ADDRESS,",
+						"          LATITUDE,",
+						"          LONGITUDE,",
+						"          INGESTED_BY = ingestedby,",
+						"          INGESTED_DATE = ingesteddate,",
+						"          INGESTED_DATE = ingestedtime",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",

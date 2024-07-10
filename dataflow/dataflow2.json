@@ -1,0 +1,61 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "df_Parquet_orderitems_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "orderitems"
+				},
+				{
+					"dataset": {
+						"referenceName": "df_products_Parquet_silver_ssms",
+						"type": "DatasetReference"
+					},
+					"name": "products"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "left_outer_join"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_id as integer,",
+				"          full_name as string,",
+				"          email_address as string,",
+				"          ingested_by as string,",
+				"          ingested_date as date,",
+				"          ingested_time as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> orderitems",
+				"source(output(",
+				"          PRODUCT_ID as integer,",
+				"          PRODUCT_NAME as string,",
+				"          UNIT_PRICE as integer,",
+				"          ingestedby as string,",
+				"          ingesteddate as date,",
+				"          ingestedtime as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> products",
+				"orderitems, products join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> left_outer_join"
+			]
+		}
+	}
+}
